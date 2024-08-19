@@ -25,11 +25,14 @@ class AnswerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Answer
         fields = '__all__'
+        depth = 2
 
-    def validate(self, data):
-        question = data.get('question')
-        if question.question_type == 'radio' and not data.get('answer_choice'):
-            raise serializers.ValidationError("Answer choice is required for radio questions.")
-        if question.question_type in ['input', 'textarea'] and not data.get('answer_text'):
-            raise serializers.ValidationError("Answer text is required for input/textarea questions.")
-        return data
+    # def validate(self, data):
+    #     # Validate the answer choice if the question type is radio
+    #     print(data,'datagggg')
+    #     question = data.get('question_type')
+    #     if question == 'radio' and not data.get('answer_choice'):
+    #         raise serializers.ValidationError("Answer choice is required for radio questions.")
+    #     if question in ['input', 'textarea'] and not data.get('answer_text'):
+    #         raise serializers.ValidationError("Answer text is required for input/textarea questions.")
+    #     return data

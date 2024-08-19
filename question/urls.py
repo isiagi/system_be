@@ -10,5 +10,6 @@ router.register(r'responses', ResponseViewSet)
 router.register(r'answers', AnswerViewSet)
 
 urlpatterns = [
-    path('api/', include(router.urls)),
+    path('', include(router.urls)),
+    path('sections/<str:section_id>/questions/', QuestionViewSet.as_view({'get': 'list'}), name='section-questions')
 ]

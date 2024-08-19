@@ -25,7 +25,10 @@ SECRET_KEY = 'django-insecure-$h)lw1)@3wpk6mra0$!it%h9%&&jr!j67*f5d45_3ahnviy$de
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1','localhost',]
+
+
+AUTH_USER_MODEL = 'userauth.CustomUser'
 
 
 # Application definition
@@ -38,6 +41,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'django_filters',
+    'corsheaders',
+    'rest_framework.authtoken',
+    'userauth',
+    'question',
+    'django_extensions',
 ]
 
 MIDDLEWARE = [
@@ -48,7 +57,23 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ]
+}
+
+CORS_ALLOW_ALL_ORIGINS = True    #Allow all origins
+
+# CORS_ALLOWED_ORIGINS = [
+#     'http://localhost:5173',
+#     'https://notes-client-drab.vercel.app'
+# ]
 
 ROOT_URLCONF = 'server.urls'
 
