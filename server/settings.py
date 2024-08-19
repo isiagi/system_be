@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-$h)lw1)@3wpk6mra0$!it%h9%&&jr!j67*f5d45_3ahnviy$de
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1','localhost',]
+ALLOWED_HOSTS = ['127.0.0.1','localhost', 'system-be-sm4x.onrender.com']
 
 
 AUTH_USER_MODEL = 'userauth.CustomUser'
@@ -95,16 +95,39 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'server.wsgi.application'
 
+import environ
+import os
+
+# Initialize Django-environ
+env = environ.Env(DEBUG=(bool, False))
+
+# Define a path to your project's .env file (optional)
+env_file = os.path.join(BASE_DIR, ".env")
+
+# Load environment variables from the .env file (if it exists)
+env.read_env(env_file)
+
+import dj_database_url
+
+DATABASES = {
+    'default': dj_database_url.config(
+        default=env("DATABASE_URL"),
+        conn_max_age=env("CONN_MAX_AGE", cast=int),
+        # ssl_require=env("SSL_REQUIRE", cast=bool),
+        conn_health_checks=env("CONN_HEALTH_CHECKS", cast=bool),
+    )
+}
+
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 
 
 # Password validation
