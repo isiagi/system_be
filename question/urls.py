@@ -11,5 +11,8 @@ router.register(r'answers', AnswerViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('sections/<str:section_id>/questions/', QuestionViewSet.as_view({'get': 'list'}), name='section-questions')
+    path('sections/<str:section_id>/questions/', QuestionViewSet.as_view({'get': 'list'}), name='section-questions'),
+    path('<int:pk>/', QuestionViewSet.as_view({'get': 'retrieve'}), name='question-detail'),
+    # delete question
+    path('<int:pk>/delete/', QuestionViewSet.as_view({'delete': 'destroy'}), name='question-delete'),
 ]
