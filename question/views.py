@@ -1,7 +1,9 @@
 from rest_framework import viewsets
-from .models import Questionnaire, Section, Question, Response, Answer
-from .serializers import QuestionnaireSerializer, SectionSerializer, QuestionSerializer, ResponseSerializer, AnswerSerializer
+from .models import Questionnaire, Section, Question, Response, Answer, Subsection, Subsubsection
+from .serializers import QuestionnaireSerializer, SectionSerializer, QuestionSerializer, ResponseSerializer, AnswerSerializer, SubsectionSerializer, SubsubsectionSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.response import Response as DRFResponse
+from rest_framework import status
 
 class QuestionnaireViewSet(viewsets.ModelViewSet):
     queryset = Questionnaire.objects.all()
@@ -10,9 +12,38 @@ class QuestionnaireViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
 
 class SectionViewSet(viewsets.ModelViewSet):
-    queryset = Section.objects.all()
+    queryset = Section.objects.all().prefetch_related('subsections__subsubsections') 
     serializer_class = SectionSerializer
     permission_classes = [IsAuthenticated]
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        instance.delete()  # This will also delete all related subsections
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+# Sutitles
+class SubsectionViewSet(viewsets.ModelViewSet):
+    queryset = Subsection.objects.all()
+    serializer_class = SubsectionSerializer
+    # permission_classes = [IsAuthenticated]
+
+# class SectionViewSet(viewsets.ModelViewSet):
+#     queryset = Section.objects.all()
+#     serializer_class = SectionSerializer
+
+#     def retrieve(self, request, *args, **kwargs):
+#         instance = self.get_object()
+#         subsections = instance.subsections.all()
+#         # Do something with subsections, e.g., include them in the response
+#         return Response({
+#             'section': SectionSerializer(instance).data,
+#             'subsections': SectionSerializer(subsections, many=True).data
+#         })
+
+
+class SubsubsectionViewSet(viewsets.ModelViewSet):
+    queryset = Subsubsection.objects.all()
+    serializer_class = SubsubsectionSerializer
 
 class QuestionViewSet(viewsets.ModelViewSet):
     queryset = Question.objects.all()
@@ -22,9 +53,14 @@ class QuestionViewSet(viewsets.ModelViewSet):
     # Get questions for a specific section
     def get_queryset(self):
         section_id = self.kwargs.get('section_id')
+        section_name = self.kwargs.get('section_name')
         # if section_id is not present return all questions
+        print(section_id, section_name)
         if section_id is None:
             return Question.objects.all()
+        elif section_name == 'subsections':
+            return Question.objects.filter(subsection=section_id)
+
         return Question.objects.filter(section=section_id)
 
 class ResponseViewSet(viewsets.ModelViewSet):
