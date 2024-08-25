@@ -58,8 +58,11 @@ class QuestionViewSet(viewsets.ModelViewSet):
         print(section_id, section_name)
         if section_id is None:
             return Question.objects.all()
-        elif section_name == 'subsections':
+        elif section_name == 'subsection':
             return Question.objects.filter(subsection=section_id)
+        
+        elif section_name == 'subsection2':
+            return Question.objects.filter(subsubsection=section_id)
 
         return Question.objects.filter(section=section_id)
 
