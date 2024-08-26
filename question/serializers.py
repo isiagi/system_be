@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from .models import Questionnaire, Section, Question, Response, Answer, Subsection, Subsubsection
+from userauth.models import CustomUser
 
+from django.contrib.auth.models import User
 class QuestionnaireSerializer(serializers.ModelSerializer):
     class Meta:
         model = Questionnaire
@@ -51,7 +53,22 @@ class SectionSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'description', 'subsections']
 
 
+class UserSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = CustomUser
+        fields = ['username',]
+
+
 class ResponseSerializer(serializers.ModelSerializer):
+
+    user = UserSerializer(required=False, read_only=True)
+    class Meta:
+        model = Response
+        fields = '__all__'
+
+
+class ResponseCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Response
         fields = '__all__'
@@ -59,8 +76,8 @@ class ResponseSerializer(serializers.ModelSerializer):
 class AnswerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Answer
-        fields = '__all__'
-        depth = 2
+        fields = ['id', 'question', 'answer_text', 'answer_choice']
+        depth = 1
 
     # def validate(self, data):
     #     # Validate the answer choice if the question type is radio
@@ -71,3 +88,17 @@ class AnswerSerializer(serializers.ModelSerializer):
     #     if question in ['input', 'textarea'] and not data.get('answer_text'):
     #         raise serializers.ValidationError("Answer text is required for input/textarea questions.")
     #     return data
+
+
+class GroupedAnswerSerializer(serializers.ModelSerializer):
+    answers = serializers.SerializerMethodField()
+    user = UserSerializer(required=False, read_only=True)
+    class Meta:
+        model = Response
+        fields = ['id', 'user', 'questionnaire', 'answers']
+        depth = 1
+
+    def get_answers(self, obj):
+        # Group answers by the response ID
+        answers = Answer.objects.filter(response=obj)
+        return AnswerSerializer(answers, many=True).data

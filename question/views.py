@@ -1,6 +1,6 @@
 from rest_framework import viewsets
 from .models import Questionnaire, Section, Question, Response, Answer, Subsection, Subsubsection
-from .serializers import QuestionnaireSerializer, SectionSerializer, QuestionSerializer, ResponseSerializer, AnswerSerializer, SubsectionSerializer, SubsubsectionSerializer
+from .serializers import QuestionnaireSerializer, SectionSerializer, QuestionSerializer, ResponseSerializer, AnswerSerializer, SubsectionSerializer, SubsubsectionSerializer, GroupedAnswerSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response as DRFResponse
 from rest_framework import status
@@ -110,6 +110,17 @@ class AnswerViewSet(viewsets.ModelViewSet):
         # Retrieve the response related to the current user and questionnaire
         response_id = self.request.data[0].get('response')  # Assuming request.data is a list
         return Response.objects.get(id=response_id, user=self.request.user)
+    
+from rest_framework import generics
+    
+class GroupedAnswerListView(viewsets.ReadOnlyModelViewSet):
+    serializer_class = GroupedAnswerSerializer
+
+    def get_queryset(self):
+        user_id = self.request.user.id
+        if user_id:
+            return Response.objects.filter(user_id=user_id)
+        return Response.objects.all()
 
 
 # class AnswerViewSet(viewsets.ModelViewSet):

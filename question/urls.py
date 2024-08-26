@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import QuestionnaireViewSet, SectionViewSet, QuestionViewSet, ResponseViewSet, AnswerViewSet, SubsectionViewSet, SubsubsectionViewSet
+from .views import QuestionnaireViewSet, SectionViewSet, QuestionViewSet, ResponseViewSet, AnswerViewSet, SubsectionViewSet, SubsubsectionViewSet, GroupedAnswerListView
 
 router = DefaultRouter()
 router.register(r'questionnaires', QuestionnaireViewSet)
@@ -10,6 +10,7 @@ router.register(r'responses', ResponseViewSet)
 router.register(r'answers', AnswerViewSet)
 router.register(r'subsections', SubsectionViewSet, basename='subsections')
 router.register(r'subsubsections', SubsubsectionViewSet, basename='subsubsections')
+router.register(r'grouped-answers', GroupedAnswerListView, basename='grouped-answers')
 
 urlpatterns = [
     path('', include(router.urls)),
